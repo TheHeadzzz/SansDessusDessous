@@ -3,32 +3,34 @@ import random as r
 
 
 #fonction qui crée le jeu
-def creerjeu(n):
+def creerjeu():
     jeu = []
-    for i in range(n):
-        jeu.append("V")
+     #on repete 3 fois pour les trois lignes de pions 
+    for i in range(3):
+        #On ajoute dans 1 ligne un nombre aléatoire de pion entre 5 et 10
+        jeu.append(["V" for j in range(r.randint(5,10))]) 
     return jeu
 
 
 #fonction qui retourne un pion choisi
-def SelectionnerPion(pion,jeu,verso):
+def SelectionnerPion(ligne,pion,jeu,verso):
+    #pas besoin de verifier la ligne entrée dans la fonction car on le fait dans le code l'utilisateur le la rentre pas lui même
     #on regarde si la carte est recto ou verso
-    if jeu[pion] == "V": #carte verso
-        jeu[pion] = "R"
+    if jeu[ligne][pion] == "V": #carte verso
+        jeu[ligne][pion] = "R"
         return jeu 
 
     else: #carte recto
         if verso == True: #si on ne peut que selectionner une carte recto renvoi une erreur
             return "Probleme_Verso"
 
-        jeu[pion] = "V"
+        jeu[ligne][pion] = "V"
         return jeu
 
 
-#fonction qui verifie si un joueur a gagné
-def CheckWin(jeu):     
-    #Return True si il n'y a plus de Verso et donc que le joueur a gagné
-    for pion in jeu:
+def Checkligne(jeu,ligne):
+    #Return True si il n'y a plus de Verso et donc si la ligne est pas jouable
+    for pion in jeu[ligne]:
 
         if pion == "V":
             return False
@@ -36,14 +38,15 @@ def CheckWin(jeu):
     return True
 
 
-#fonction qui affiche le jeu
-def AfficheJeu(jeu):
-    print("| ", end="")
+#fonction qui verifie si un joueur a gagné
+def CheckWin(jeu):     
+    for i in range(3):
+    #Chekligne renvoit false on peut toujours jouer, on renvoit false
+       if not Checkligne(jeu,i):
+           return False
+    #si on a pas renvoyé false pour une des lignes alors on ne peut plus jouer. Qlq a gagné on renvoit true
+    return True
 
-    for i in jeu:
-        print(i, end=" | ")
-
-    print("",end="\n")
 
 
 #fonction qui fait jouer l'ordinateur
@@ -97,11 +100,10 @@ def joueur (jeu, choix, recto,choix_precedent,NbPions):
 
 jouer = True
 NbPions = r.randint(5,12)
-jeu = creerjeu(NbPions)
+Le_jeu = creerjeu(NbPions)
 while jouer:
     
     #on fait jouer le joueur
-    AfficheJeu(jeu)
     tour_joueur = True
     Verso = True
     choix_precedent=NbPions+1# On le met a cette valeur pour ne pas avoir de probleme pendant le premier tour du joueur
@@ -130,7 +132,6 @@ while jouer:
             tour_joueur = False
             #on verifie si le joueur a gagné
             if CheckWin(jeu) == True:
-                AfficheJeu(jeu)
                 print("BRAVO VOUS AVEZ GAGNE !!!!")
                 jouer = False
 
@@ -140,7 +141,6 @@ while jouer:
                 #si ce n'est pas le cas on demande s'il veut rejouer
                 if  choix != 1 and input("Veux tu rejouer (o/n)") == "o":
                     choix_precedent = choix
-                    AfficheJeu(jeu)
                     Verso = False
                     tour_joueur = True
             
@@ -148,10 +148,8 @@ while jouer:
     #si jouer = False le joueur a gagné on demande au J s'il veut recommencer une partie 
     if jouer != False:
     #le joueur n'a pas gagné c'est au tour de l'ordinateur
-        AfficheJeu(jeu)
         jeu = ordinateur(jeu, NbPions)
         
         if CheckWin(jeu) == True:
-            AfficheJeu(jeu)
             print("L'ordinateur a gagné !!! ")
             jouer = False
